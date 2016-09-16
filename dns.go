@@ -34,10 +34,11 @@ type dnsClient struct {
 	provider  string
 	secret    string
 	secretKey string
+	namespace string
 }
 
-func newDNSClient(provider, domain, secret, secretKey string) (*dnsClient, error) {
-	return &dnsClient{domain, provider, secret, secretKey}, nil
+func newDNSClient(provider, domain, secret, secretKey, namespace string) (*dnsClient, error) {
+	return &dnsClient{domain, provider, secret, secretKey, namespace}, nil
 }
 
 func envVar(key, value string) string {
@@ -45,7 +46,7 @@ func envVar(key, value string) string {
 }
 
 func (c *dnsClient) createRecord(fqdn, value string, ttl int) error {
-	providerConfig, err := getDNSConfigFromSecret(c.secret, c.secretKey)
+	providerConfig, err := getDNSConfigFromSecret(c.secret, c.namespace, c.secretKey)
 	if err != nil {
 		return errors.New("Error getting dns config from secret" + err.Error())
 	}
@@ -74,7 +75,7 @@ func (c *dnsClient) createRecord(fqdn, value string, ttl int) error {
 }
 
 func (c *dnsClient) deleteRecord(fqdn, value string, ttl int) error {
-	providerConfig, err := getDNSConfigFromSecret(c.secret, c.secretKey)
+	providerConfig, err := getDNSConfigFromSecret(c.secret, c.namespace, c.secretKey)
 	if err != nil {
 		return errors.New("Error getting dns config from secret" + err.Error())
 	}
